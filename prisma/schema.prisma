@@ -1,0 +1,194 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- Énumérations ---
+
+enum Role {
+  Admin
+  Client
+}
+
+enum TypeMesure {
+  manuelle
+  ai_generation
+}
+
+enum TypeCostumisation {
+  Col
+  Bouton
+  Broderie
+  Manche
+}
+
+enum TypeTissus {
+  Bazin
+  Coton
+  Lin
+}
+
+enum StatutCommande {
+  EnAttente
+  EnProduction
+  Pret
+  Livre
+}
+
+enum ModePaiement {
+  OrangeMoney
+  Wave
+  MoovMoney
+  Visa
+  MasterCard
+  PayPal
+}
+
+enum StatutPaiement {
+  EnAttente
+  Echouet
+  Effectue
+}
+
+// ---------- Commande -------------------------------
+
+model Utilisateur {
+  id         Int     @id @default(autoincrement())
+  nom        String
+  prenom     String
+  telephone  String  @unique
+  email      String  @unique
+  motDePasse String
+  role       Role    @default(Client)
+  adresse    String?
+
+  // Relations
+  mesures   Mesure[]
+  commandes Commande[]
+}
+
+model Categorie {
+  id          Int     @id @default(autoincrement())
+  nom         String // Homme / Femme
+  description String?
+  modeles     Model[]
+}
+
+model Model {
+  id          Int     @id @default(autoincrement())
+  nom         String
+  description String?
+  prixBase    Int
+
+  categorieId Int
+  categorie   Categorie @relation(fields: [categorieId], references: [id])
+
+  // Relations
+  options OptionCustomisation[]
+  tenues  Tenue[]
+  medias  Media[]
+}
+
+model OptionCustomisation {
+  id        Int               @id @default(autoincrement())
+  type      TypeCostumisation
+  nom       String
+  prixAjout Int
+
+  modelId Int
+  model   Model @relation(fields: [modelId], references: [id])
+}
+
+model Tissus {
+  id             Int        @id @default(autoincrement())
+  type           TypeTissus
+  couleur        String
+  texture        String
+  prixParMetre   Int
+  stock          Int
+  monbreDeMetres Int
+
+  tenues Tenue[]
+  medias Media[]
+}
+
+model Mesure {
+  id            Int        @id @default(autoincrement())
+  label         String
+  poitrine      Float
+  taille        Float
+  poids         Float
+  epaule        Float
+  longueurBras  Float
+  longueurJambe Float
+  cou           Float
+  hanche        Float
+  status        TypeMesure
+
+  utilisateurId Int
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+
+  tenues Tenue[]
+}
+
+model Commande {
+  id             Int            @id @default(autoincrement())
+  dateCommande   DateTime       @default(now())
+  statutCommande StatutCommande @default(EnAttente)
+  totalPrice     Int            @default(0)
+
+  utilisateurId Int
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+
+  tenues   Tenue[]
+  paiement Paiement?
+}
+
+model Tenue {
+  id Int @id @default(autoincrement())
+
+  commandeId Int
+  commande   Commande @relation(fields: [commandeId], references: [id])
+
+  modelId Int
+  model   Model @relation(fields: [modelId], references: [id])
+
+  tissusId Int
+  tissus   Tissus @relation(fields: [tissusId], references: [id])
+
+  mesureId Int
+  mesure   Mesure @relation(fields: [mesureId], references: [id])
+}
+
+model Paiement {
+  id             Int            @id @default(autoincrement())
+  modePaiement   ModePaiement
+  montant        Int
+  statutPaiement StatutPaiement @default(EnAttente)
+  imageUrl       String? // Preuve de paiement si nécessaire
+
+  commandeId Int      @unique
+  commande   Commande @relation(fields: [commandeId], references: [id])
+}
+
+model Media {
+  id       Int    @id @default(autoincrement())
+  nom      String
+  path     String
+  imageUrl String
+
+  // Relations optionnelles pour lier aux entités
+  modelId Int?
+  model   Model? @relation(fields: [modelId], references: [id])
+
+  tissusId Int?
+  tissus   Tissus? @relation(fields: [tissusId], references: [id])
+}
