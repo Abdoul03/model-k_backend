@@ -14,8 +14,8 @@ datasource db {
 // --- Énumérations ---
 
 enum Role {
-  Admin
-  Client
+  ADMIN
+  CLIENT
 }
 
 enum TypeMesure {
@@ -67,7 +67,7 @@ model Utilisateur {
   telephone  String  @unique
   email      String  @unique
   motDePasse String
-  role       Role    @default(Client)
+  role       Role    @default(CLIENT)
   adresse    String?
 
   // Relations
@@ -131,6 +131,8 @@ model Mesure {
   longueurJambe Float
   cou           Float
   hanche        Float
+  poignet       Float
+  ventre        Float
   status        TypeMesure
 
   utilisateurId Int
