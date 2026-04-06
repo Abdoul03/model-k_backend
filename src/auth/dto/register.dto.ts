@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsEmpty,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -10,24 +9,26 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class RegisterDto {
   @ApiProperty()
-  @IsString({ message: 'Le nom doit être une chaîne de caractères.' })
-  @IsEmpty({ message: 'Le nom ne doit pas être vide.' })
+  @IsString()
+  @IsNotEmpty({ message: 'Le nom ne doit pas être vide' })
   nom: string;
 
   @ApiProperty()
-  @IsString({ message: 'Le prénom doit être une chaîne de caractères.' })
-  @IsEmpty({ message: 'Le prénom ne doit pas être vide.' })
+  @IsString()
+  @IsNotEmpty({ message: 'Le prenom ne doit pas être vide' })
   prenom: string;
 
   @ApiProperty()
-  @IsString({ message: "L'email doit être une chaîne de caractères." })
-  @IsEmail({}, { message: "L'email doit être une adresse email valide." })
+  @IsEmail()
   @IsNotEmpty({ message: "L'email ne doit pas être vide." })
   email: string;
 
   @ApiProperty()
+  @IsString()
+  @MinLength(8, { message: 'Le numero doit etre au minimun 8 caractere' })
+  @MaxLength(15, { message: 'Le numero doit etre au maximun 15' })
   @IsNotEmpty({ message: 'Le téléphone ne doit pas être vide.' })
   telephone: string;
 
@@ -51,7 +52,4 @@ export class CreateUserDto {
     message: 'Le rôle doit être soit "Client" soit "ADMIN".',
   })
   role?: 'CLIENT' | 'ADMIN';
-
-  @IsOptional()
-  refreshToken?: string;
 }

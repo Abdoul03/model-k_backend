@@ -61,14 +61,15 @@ enum StatutPaiement {
 // ---------- Commande -------------------------------
 
 model Utilisateur {
-  id         Int     @id @default(autoincrement())
-  nom        String
-  prenom     String
-  telephone  String  @unique
-  email      String  @unique
-  motDePasse String
-  role       Role    @default(CLIENT)
-  adresse    String?
+  id           Int     @id @default(autoincrement())
+  nom          String
+  prenom       String
+  telephone    String  @unique
+  email        String  @unique
+  motDePasse   String
+  role         Role    @default(CLIENT)
+  adresse      String?
+  refreshToken String? @db.Text
 
   // Relations
   mesures   Mesure[]
