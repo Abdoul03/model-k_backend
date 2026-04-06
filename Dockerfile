@@ -17,5 +17,5 @@ COPY . .
 # 6. Exposer le port sur lequel ton serveur NestJS tourne
 EXPOSE 3000
 
-# 7. Lancer l'application en mode développement
-CMD ["npm", "run", "start:dev"]
+# 7. Lancer l'application en production
+CMD ["npm", "run", "build"]
