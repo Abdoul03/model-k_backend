@@ -48,6 +48,7 @@ export class RegisterDto {
   adresse?: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsEnum(['CLIENT', 'ADMIN'], {
     message: 'Le rôle doit être soit "Client" soit "ADMIN".',
   })

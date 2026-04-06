@@ -8,6 +8,7 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
+import { RefreshDto } from './dto/refresh.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
     const payload = { sub: userId, email };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, { expiresIn: '15m' }),
-      this.jwtService.signAsync(payload, { expiresIn: '7d' }),
+      this.jwtService.signAsync(payload, { expiresIn: '15d' }),
     ]);
 
     return { accessToken, refreshToken };
@@ -39,13 +40,13 @@ export class AuthService {
     }
     const user = await this.userService.create(registerDto);
 
-    const tokens = this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.email);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { motDePasse, ...userWithoutPassword } = user;
 
     await this.userService.update(user.id, {
-      refreshToken: await bcrypt.hash((await tokens).refreshToken, 10),
+      refreshToken: await bcrypt.hash(tokens.refreshToken, 10),
     });
 
     return {
@@ -63,18 +64,19 @@ export class AuthService {
       loginDto.password,
       user.motDePasse,
     );
+
     if (!isPasswordValide) {
       throw new UnauthorizedException('Identifiant ou mot de passe invalide');
     }
 
-    const tokens = this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.email);
+
+    await this.userService.update(user.id, {
+      refreshToken: await bcrypt.hash(tokens.refreshToken, 10),
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { motDePasse, ...userWithoutPassword } = user;
-
-    await this.userService.update(user.id, {
-      refreshToken: await bcrypt.hash((await tokens).refreshToken, 10),
-    });
 
     return {
       user: userWithoutPassword,
@@ -82,19 +84,19 @@ export class AuthService {
     };
   }
 
-  async refreshToken(token: string) {
+  async refreshToken(refreshDto: RefreshDto) {
     try {
       // 1. Vérifier la validité du jeton (signature et expiration)
       const payload = await this.jwtService.verifyAsync<{
         sub: number;
         email: string;
-      }>(token);
+      }>(refreshDto.refreshToken);
 
       const user = await this.userService.findOne(payload.sub);
 
       const isTokenMatching =
         user && user.refreshToken
-          ? await bcrypt.compare(token, user.refreshToken)
+          ? await bcrypt.compare(refreshDto.refreshToken, user.refreshToken)
           : false;
 
       if (!isTokenMatching) {

@@ -12,11 +12,6 @@ export class DatabaseService extends PrismaClient implements OnModuleInit {
   }
 
   async onModuleInit() {
-    try {
-      await this.$connect();
-      console.log('Connexion locale réussie !');
-    } catch (error) {
-      console.error('Erreur :', error);
-    }
+    await this.$connect();
   }
 }
