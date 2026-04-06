@@ -50,8 +50,8 @@ export class CreateUserDto {
   adresse?: string;
 
   @ApiProperty()
-  @IsEnum(['Client', 'ADMIN'], {
+  @IsEnum(['CLIENT', 'ADMIN'], {
     message: 'Le rôle doit être soit "Client" soit "ADMIN".',
   })
-  role?: 'Client' | 'ADMIN ';
+  role?: 'CLIENT' | 'ADMIN';
 }
