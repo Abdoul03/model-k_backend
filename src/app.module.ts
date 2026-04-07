@@ -5,6 +5,9 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { MesureModule } from './mesure/mesure.module';
+import { CommandeModule } from './commande/commande.module';
+import { PaiementModule } from './paiement/paiement.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
         limit: 100,
       },
     ]),
+    MesureModule,
+    CommandeModule,
+    PaiementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
