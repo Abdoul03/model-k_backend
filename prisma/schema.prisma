@@ -19,8 +19,8 @@ enum Role {
 }
 
 enum TypeMesure {
-  manuelle
-  ai_generation
+  Manuelle
+  Ai_generation
 }
 
 enum TypeCostumisation {
@@ -134,7 +134,7 @@ model Mesure {
   hanche        Float
   poignet       Float
   ventre        Float
-  status        TypeMesure
+  status        TypeMesure @default(Manuelle)
 
   utilisateurId Int
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])

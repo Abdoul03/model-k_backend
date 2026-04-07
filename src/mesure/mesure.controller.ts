@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { MesureService } from './mesure.service';
 import { CreateMesureDto } from './dto/create-mesure.dto';
 import { UpdateMesureDto } from './dto/update-mesure.dto';
@@ -7,28 +16,41 @@ import { UpdateMesureDto } from './dto/update-mesure.dto';
 export class MesureController {
   constructor(private readonly mesureService: MesureService) {}
 
-  @Post()
-  create(@Body() createMesureDto: CreateMesureDto) {
-    return this.mesureService.create(createMesureDto);
+  @Post(':userId')
+  create(
+    @Body() createMesureDto: CreateMesureDto,
+    @Param('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.mesureService.createUserMesure(createMesureDto, userId);
   }
 
-  @Get()
-  findAll() {
-    return this.mesureService.findAll();
+  @Get(':userId/all')
+  findAll(@Param('userId', ParseIntPipe) userId: number) {
+    return this.mesureService.findAllMesuresOfUser(userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.mesureService.findOne(+id);
+  @Get(':id/:userId')
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('userId') userId: number,
+  ) {
+    return this.mesureService.findOneMesure(id, userId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMesureDto: UpdateMesureDto) {
-    return this.mesureService.update(+id, updateMesureDto);
+  @Patch(':id/:userId')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() updateMesureDto: UpdateMesureDto,
+  ) {
+    return this.mesureService.update(id, updateMesureDto, userId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.mesureService.remove(+id);
+  @Delete(':id/:userId')
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.mesureService.remove(id, userId);
   }
 }

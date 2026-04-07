@@ -23,21 +23,21 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+    return await this.authService.register(registerDto);
   }
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+    return await this.authService.login(loginDto);
   }
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Body() refreshDto: RefreshDto) {
-    return this.authService.refreshToken(refreshDto);
+    return await this.authService.refreshToken(refreshDto);
   }
 
   @UseGuards(JwtAuthGuard)

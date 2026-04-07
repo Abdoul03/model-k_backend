@@ -1,26 +1,87 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMesureDto } from './dto/create-mesure.dto';
 import { UpdateMesureDto } from './dto/update-mesure.dto';
+import { UsersService } from '../users/users.service';
+import { Mesure } from './entities/mesure.entity';
+import { DatabaseService } from '../database/database.service';
 
 @Injectable()
 export class MesureService {
-  create(createMesureDto: CreateMesureDto) {
-    return 'This action adds a new mesure';
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly databaseService: DatabaseService,
+  ) {}
+
+  async createUserMesure(
+    createMesureDto: CreateMesureDto,
+    userId: number,
+  ): Promise<Mesure> {
+    return await this.databaseService.$transaction(async (prisma) => {
+      const user = await this.usersService.findOne(userId);
+      if (!user) {
+        throw new NotFoundException('Utilisateur introuvable');
+      }
+      const mesure = await prisma.mesure.create({
+        data: {
+          ...createMesureDto,
+          utilisateurId: user.id,
+        },
+      });
+      return mesure;
+    });
   }
 
-  findAll() {
-    return `This action returns all mesure`;
+  async findAllMesuresOfUser(userId: number): Promise<Mesure[]> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+    return await this.databaseService.mesure.findMany({
+      where: {
+        utilisateurId: user.id,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} mesure`;
+  async findOneMesure(id: number, userId: number): Promise<Mesure> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+    const mesure = await this.databaseService.mesure.findUnique({
+      where: { id },
+    });
+    if (!mesure) {
+      throw new NotFoundException(' Mesure introuvable ');
+    }
+    return mesure;
   }
 
-  update(id: number, updateMesureDto: UpdateMesureDto) {
-    return `This action updates a #${id} mesure`;
+  async update(
+    id: number,
+    updateMesureDto: UpdateMesureDto,
+    userId: number,
+  ): Promise<Mesure> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+    return await this.databaseService.mesure.update({
+      where: { id },
+      data: {
+        ...updateMesureDto,
+        utilisateurId: user.id,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} mesure`;
+  async remove(id: number, userId: number) {
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+    return await this.databaseService.mesure.delete({
+      where: { id },
+    });
   }
 }

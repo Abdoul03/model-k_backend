@@ -1,1 +1,1 @@
-export class Mesure {}
+export type { Mesure } from '@prisma/client';
