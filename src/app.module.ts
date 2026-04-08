@@ -8,6 +8,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { MesureModule } from './mesure/mesure.module';
 import { CommandeModule } from './commande/commande.module';
 import { PaiementModule } from './paiement/paiement.module';
+import { DesignModule } from './design/design.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PaiementModule } from './paiement/paiement.module';
     MesureModule,
     CommandeModule,
     PaiementModule,
+    DesignModule,
   ],
   controllers: [AppController],
   providers: [AppService],
