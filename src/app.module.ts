@@ -10,6 +10,7 @@ import { CommandeModule } from './commande/commande.module';
 import { PaiementModule } from './paiement/paiement.module';
 import { DesignModule } from './design/design.module';
 import { CategorieModule } from './categorie/categorie.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { CategorieModule } from './categorie/categorie.module';
     PaiementModule,
     DesignModule,
     CategorieModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
