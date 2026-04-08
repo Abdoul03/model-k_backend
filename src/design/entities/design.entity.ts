@@ -1,1 +1,1 @@
-export class Design {}
+export type { Model } from '@prisma/client';

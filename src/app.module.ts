@@ -9,6 +9,7 @@ import { MesureModule } from './mesure/mesure.module';
 import { CommandeModule } from './commande/commande.module';
 import { PaiementModule } from './paiement/paiement.module';
 import { DesignModule } from './design/design.module';
+import { CategorieModule } from './categorie/categorie.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { DesignModule } from './design/design.module';
     CommandeModule,
     PaiementModule,
     DesignModule,
+    CategorieModule,
   ],
   controllers: [AppController],
   providers: [AppService],

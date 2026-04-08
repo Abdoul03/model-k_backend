@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateDesignDto {
+export class CreateCategorieDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'Le nom ne doit pas être vide' })
@@ -11,9 +11,4 @@ export class CreateDesignDto {
   @IsString()
   @IsNotEmpty({ message: 'La description ne doit pas être vide' })
   description: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty({ message: 'Le prix de base est obligatoire' })
-  prixBase: number;
 }
