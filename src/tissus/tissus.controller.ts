@@ -8,14 +8,14 @@ import {
   UseInterceptors,
   Delete,
   UploadedFiles,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TissusService } from './tissus.service';
 import { CreateTissusDto } from './dto/create-tissus.dto';
 import { UpdateTissusDto } from './dto/update-tissus.dto';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
-@ApiTags('design')
 @Controller('tissus')
 export class TissusController {
   constructor(private readonly tissusService: TissusService) {}
@@ -36,17 +36,23 @@ export class TissusController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tissusService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.tissusService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTissusDto: UpdateTissusDto) {
-    return this.tissusService.update(+id, updateTissusDto);
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('files'))
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTissusDto: UpdateTissusDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.tissusService.update(id, updateTissusDto, files);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tissusService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.tissusService.remove(id);
   }
 }

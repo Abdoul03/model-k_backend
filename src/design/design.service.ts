@@ -28,6 +28,7 @@ export class DesignService {
           nom: createDesignDto.nom,
           description: createDesignDto.description,
           prixBase: Number(createDesignDto.prixBase),
+          nombreDeMetre: Number(createDesignDto.nombreDeMettre),
           categorieId: Number(categorie.id),
         },
       });
@@ -94,6 +95,9 @@ export class DesignService {
           nom: updateDesignDto.nom ?? design.nom,
           description: updateDesignDto.description ?? design.description,
           prixBase: Number(updateDesignDto.prixBase ?? design.prixBase),
+          nombreDeMetre: Number(
+            updateDesignDto.nombreDeMettre ?? design.nombreDeMetre,
+          ),
           categorieId: Number(
             updateDesignDto.categorieId ?? design.categorieId,
           ),
