@@ -17,6 +17,10 @@ export class CreateDesignDto {
   prixBase: number;
 
   @ApiProperty()
+  @IsNotEmpty({ message: 'Le prix de base est obligatoire' })
+  nombreDeMettre: number;
+
+  @ApiProperty()
   @IsNotEmpty({ message: 'La categorie est obligatoire' })
   categorieId: number;
 }

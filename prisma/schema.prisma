@@ -84,10 +84,11 @@ model Categorie {
 }
 
 model Model {
-  id          Int     @id @default(autoincrement())
-  nom         String
-  description String?
-  prixBase    Int
+  id            Int     @id @default(autoincrement())
+  nom           String
+  description   String?
+  prixBase      Int
+  nombreDeMetre Int     @default(0)
 
   categorieId Int
   categorie   Categorie @relation(fields: [categorieId], references: [id])
@@ -109,13 +110,12 @@ model OptionCustomisation {
 }
 
 model Tissus {
-  id             Int        @id @default(autoincrement())
-  type           TypeTissus
-  couleur        String
-  texture        String
-  prixParMetre   Int
-  stock          Int
-  monbreDeMetres Int
+  id           Int        @id @default(autoincrement())
+  type         TypeTissus
+  couleur      String
+  texture      String
+  prixParMetre Int
+  stock        Int
 
   tenues Tenue[]
   medias Media[]

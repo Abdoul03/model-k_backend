@@ -11,6 +11,7 @@ import { PaiementModule } from './paiement/paiement.module';
 import { DesignModule } from './design/design.module';
 import { CategorieModule } from './categorie/categorie.module';
 import { MediaModule } from './media/media.module';
+import { TissusModule } from './tissus/tissus.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { MediaModule } from './media/media.module';
     DesignModule,
     CategorieModule,
     MediaModule,
+    TissusModule,
   ],
   controllers: [AppController],
   providers: [AppService],

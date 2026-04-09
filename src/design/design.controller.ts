@@ -49,11 +49,11 @@ export class DesignController {
     @Body() updateDesignDto: UpdateDesignDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.designService.update(+id, updateDesignDto, files);
+    return this.designService.update(id, updateDesignDto, files);
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.designService.remove(+id);
+    return this.designService.remove(id);
   }
 }
