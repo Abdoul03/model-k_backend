@@ -11,21 +11,18 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
-import { CreateMediaDto } from './dto/create-media.dto';
-import { UpdateMediaDto } from './dto/update-media.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes } from '@nestjs/swagger';
 
 @Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
   @Post('upload')
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
-  create(
-    @Body() createMediaDto: CreateMediaDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    return this.mediaService.create(createMediaDto, file);
+  create(@Body() nom: string, @UploadedFile() file: Express.Multer.File) {
+    return this.mediaService.create(nom, file);
   }
 
   @Get()
@@ -40,12 +37,13 @@ export class MediaController {
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateMediaDto: UpdateMediaDto,
+    @Body() nom: string,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.mediaService.update(id, updateMediaDto, file);
+    return this.mediaService.update(id, nom, file);
   }
 
   @Delete(':id')

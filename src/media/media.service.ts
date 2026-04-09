@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateMediaDto } from './dto/create-media.dto';
-import { UpdateMediaDto } from './dto/update-media.dto';
 import { Media } from './entities/media.entity';
 import { DatabaseService } from '../database/database.service';
 import * as fs from 'fs';
@@ -13,10 +11,7 @@ import sharp from 'sharp';
 export class MediaService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(
-    createMediaDto: CreateMediaDto,
-    file: Express.Multer.File,
-  ): Promise<Media> {
+  async create(nom: string, file: Express.Multer.File): Promise<Media> {
     // Tu peux remplacer any par ton modèle Prisma Media
     const desktopPath = path.join(os.homedir(), 'Desktop', 'modolk_uploads');
 
@@ -40,7 +35,7 @@ export class MediaService {
       // 2. Enregistrement en base de données
       return await this.databaseService.media.create({
         data: {
-          nom: createMediaDto.nom,
+          nom: nom,
           path: filePath,
           imageUrl: `/uploads/${fileName}`,
         },
@@ -66,11 +61,7 @@ export class MediaService {
     return media;
   }
 
-  async update(
-    id: number,
-    updateMediaDto: UpdateMediaDto,
-    file?: Express.Multer.File,
-  ) {
+  async update(id: number, nom: string, file?: Express.Multer.File) {
     // 1. Vérifier si le média existe
     const existingMedia = await this.databaseService.media.findUnique({
       where: { id },
@@ -111,7 +102,7 @@ export class MediaService {
     return await this.databaseService.media.update({
       where: { id },
       data: {
-        nom: updateMediaDto.nom ?? existingMedia.nom,
+        nom: nom ?? existingMedia.nom,
         path: filePath,
         imageUrl: imageUrl,
       },
@@ -119,8 +110,23 @@ export class MediaService {
   }
 
   async remove(id: number) {
-    return await this.databaseService.media.delete({
+    const existingMedia = await this.databaseService.media.findUnique({
       where: { id },
     });
+
+    if (!existingMedia) {
+      throw new NotFoundException('Media introuvable');
+    }
+
+    if (fs.existsSync(existingMedia.path)) {
+      fs.unlinkSync(existingMedia.path);
+    }
+
+    await this.databaseService.media.delete({
+      where: { id },
+    });
+    return {
+      message: `Media #${id} a été supprimés.`,
+    };
   }
 }

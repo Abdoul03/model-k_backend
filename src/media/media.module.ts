@@ -7,6 +7,6 @@ import { DatabaseModule } from '../database/database.module';
   imports: [DatabaseModule],
   controllers: [MediaController],
   providers: [MediaService],
-  exports: [MediaModule],
+  exports: [MediaService],
 })
 export class MediaModule {}
