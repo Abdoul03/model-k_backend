@@ -12,6 +12,7 @@ import { DesignModule } from './design/design.module';
 import { CategorieModule } from './categorie/categorie.module';
 import { MediaModule } from './media/media.module';
 import { TissusModule } from './tissus/tissus.module';
+import { CustumOptionModule } from './custum-option/custum-option.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { TissusModule } from './tissus/tissus.module';
     CategorieModule,
     MediaModule,
     TissusModule,
+    CustumOptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
