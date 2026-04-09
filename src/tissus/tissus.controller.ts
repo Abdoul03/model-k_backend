@@ -1,15 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseInterceptors,
+  Delete,
+  UploadedFiles,
+} from '@nestjs/common';
 import { TissusService } from './tissus.service';
 import { CreateTissusDto } from './dto/create-tissus.dto';
 import { UpdateTissusDto } from './dto/update-tissus.dto';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
+@ApiTags('design')
 @Controller('tissus')
 export class TissusController {
   constructor(private readonly tissusService: TissusService) {}
 
   @Post()
-  create(@Body() createTissusDto: CreateTissusDto) {
-    return this.tissusService.create(createTissusDto);
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('files'))
+  create(
+    @Body() createTissusDto: CreateTissusDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.tissusService.create(createTissusDto, files);
   }
 
   @Get()
