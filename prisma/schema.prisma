@@ -92,6 +92,8 @@ model Model {
 
   categorieId Int
   categorie   Categorie @relation(fields: [categorieId], references: [id])
+  tissusId    Int
+  tissus      Tissus    @relation(fields: [tissusId], references: [id])
 
   // Relations
   options OptionCustomisation[]
@@ -108,8 +110,15 @@ model OptionCustomisation {
   modelId Int
   model   Model @relation(fields: [modelId], references: [id])
 
-  tenueId Int
-  tenue   Tenue @relation(fields: [tenueId], references: [id])
+  choixClients OptionChoisie[]
+}
+
+model OptionChoisie {
+  id                    Int                 @id @default(autoincrement())
+  tenueId               Int
+  tenue                 Tenue               @relation(fields: [tenueId], references: [id])
+  optionCustomisationId Int
+  option                OptionCustomisation @relation(fields: [optionCustomisationId], references: [id])
 }
 
 model Tissus {
@@ -122,6 +131,7 @@ model Tissus {
 
   tenues Tenue[]
   medias Media[]
+  model  Model[]
 }
 
 model Mesure {
@@ -173,7 +183,7 @@ model Tenue {
   mesureId Int
   mesure   Mesure @relation(fields: [mesureId], references: [id])
 
-  options OptionCustomisation[]
+  options OptionChoisie[]
 
   mesuresSnapshot Json?
 

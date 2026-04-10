@@ -23,4 +23,8 @@ export class CreateDesignDto {
   @ApiProperty()
   @IsNotEmpty({ message: 'La categorie est obligatoire' })
   categorieId: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: 'La categorie est obligatoire' })
+  tissusId: number;
 }

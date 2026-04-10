@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Model" ADD COLUMN     "tissusId" INTEGER NOT NULL DEFAULT 0;
+
+-- AddForeignKey
+ALTER TABLE "Model" ADD CONSTRAINT "Model_tissusId_fkey" FOREIGN KEY ("tissusId") REFERENCES "Tissus"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

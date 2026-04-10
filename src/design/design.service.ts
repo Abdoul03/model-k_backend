@@ -30,6 +30,7 @@ export class DesignService {
           prixBase: Number(createDesignDto.prixBase),
           nombreDeMetre: Number(createDesignDto.nombreDeMettre),
           categorieId: Number(categorie.id),
+          tissusId: Number(createDesignDto.tissusId),
         },
       });
 

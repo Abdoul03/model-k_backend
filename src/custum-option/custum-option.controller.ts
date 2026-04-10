@@ -20,9 +20,9 @@ export class CustumOptionController {
     return this.custumOptionService.create(createCustumOptionDto);
   }
 
-  @Get()
-  findAll() {
-    return this.custumOptionService.findAll();
+  @Get(':modelId')
+  findAll(@Param('modelId') modelId: number) {
+    return this.custumOptionService.findAll(modelId);
   }
 
   @Get(':id')
