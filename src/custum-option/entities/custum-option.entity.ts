@@ -1,1 +1,1 @@
-export class CustumOption {}
+export type { OptionCustomisation } from '@prisma/client';

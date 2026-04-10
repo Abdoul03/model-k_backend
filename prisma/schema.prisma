@@ -107,6 +107,9 @@ model OptionCustomisation {
 
   modelId Int
   model   Model @relation(fields: [modelId], references: [id])
+
+  tenueId Int
+  tenue   Tenue @relation(fields: [tenueId], references: [id])
 }
 
 model Tissus {
@@ -169,6 +172,13 @@ model Tenue {
 
   mesureId Int
   mesure   Mesure @relation(fields: [mesureId], references: [id])
+
+  options OptionCustomisation[]
+
+  mesuresSnapshot Json?
+
+  quantite     Int @default(1)
+  prixUnitaire Int // Prix calculé : Model + Tissu + Options
 }
 
 model Paiement {
