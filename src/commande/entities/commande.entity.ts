@@ -1,1 +1,1 @@
-export class Commande {}
+export type { Commande } from '@prisma/client';
