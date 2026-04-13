@@ -18,13 +18,13 @@ export class CreateDesignDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: 'Le prix de base est obligatoire' })
-  nombreDeMettre: number;
+  nombreDeMetre: number;
 
   @ApiProperty()
   @IsNotEmpty({ message: 'La categorie est obligatoire' })
   categorieId: number;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'La categorie est obligatoire' })
+  @IsNotEmpty({ message: 'Le tissus est obligatoire' })
   tissusId: number;
 }

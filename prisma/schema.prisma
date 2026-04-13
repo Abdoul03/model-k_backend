@@ -196,7 +196,6 @@ model Paiement {
   modePaiement   ModePaiement
   montant        Int
   statutPaiement StatutPaiement @default(EnAttente)
-  imageUrl       String? // Preuve de paiement si nécessaire
 
   commandeId Int      @unique
   commande   Commande @relation(fields: [commandeId], references: [id])
