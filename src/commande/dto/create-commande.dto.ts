@@ -13,6 +13,7 @@ export class CreateCommandeDto {
   @ApiProperty()
   @IsNotEmpty({ message: 'Le model est oblicatoire' })
   tenues: {
+    tenueId?: number;
     modelId: number;
     tissusId: number;
     mesureId: number;

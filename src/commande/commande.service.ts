@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCommandeDto } from './dto/create-commande.dto';
 import { UpdateCommandeDto } from './dto/update-commande.dto';
 import { DatabaseService } from '../database/database.service';
@@ -118,8 +122,85 @@ export class CommandeService {
     return await this.databaseService.commande.findUnique({ where: { id } });
   }
 
-  update(id: number, updateCommandeDto: UpdateCommandeDto) {
-    return `This action updates a #${id} commande`;
+  async update(id: number, updateCommandeDto: UpdateCommandeDto) {
+    return await this.databaseService.$transaction(async (tx) => {
+      // 1. Vérifier si la commande existe et son statut
+      const commandeExistante = await tx.commande.findUnique({
+        where: { id },
+        include: { tenues: true },
+      });
+
+      if (!commandeExistante) {
+        throw new NotFoundException('Commande existante introuvable');
+      }
+
+      if (commandeExistante.statutCommande !== 'EnAttente') {
+        throw new BadRequestException(
+          'La commande est déjà en production et ne peut plus être modifiée.',
+        );
+      }
+
+      // 2. Si on modifie les tenues (ex: changement d'options ou de tissu)
+      if (updateCommandeDto.tenues) {
+        for (const item of updateCommandeDto.tenues) {
+          // On récupère les nouveaux prix des options/tissus
+          const model = await tx.model.findUnique({
+            where: { id: item.modelId },
+          });
+          const tissu = await tx.tissus.findUnique({
+            where: { id: item.tissusId },
+          });
+          const options = await tx.optionCustomisation.findMany({
+            where: { id: { in: item.optionIds } },
+          });
+
+          if (!model || !tissu) {
+            throw new NotFoundException(
+              `Modèle ou Tissu introuvable pour l'item`,
+            );
+          }
+
+          const prixUnitaire =
+            model.prixBase +
+            model.nombreDeMetre * tissu.prixParMetre +
+            options.reduce((s, o) => s + o.prixAjout, 0);
+
+          // Mise à jour de la tenue et de ses options
+          await tx.tenue.update({
+            where: { id: item.tenueId },
+            data: {
+              tissusId: item.tissusId,
+              quantite: item.quantite,
+              prixUnitaire: prixUnitaire,
+              // On remplace les anciennes options par les nouvelles
+              options: {
+                deleteMany: {}, // Supprime les anciens choix
+                create: item.optionIds.map((oid) => ({
+                  optionCustomisationId: oid,
+                })),
+              },
+            },
+          });
+        }
+      }
+
+      // 3. Recalculer le totalPrice de la commande globale
+      const tenuesMisesAJour = await tx.tenue.findMany({
+        where: { commandeId: id },
+      });
+      const nouveauTotal = tenuesMisesAJour.reduce(
+        (s, t) => s + t.prixUnitaire * t.quantite,
+        0,
+      );
+
+      return tx.commande.update({
+        where: { id },
+        data: {
+          totalPrice: nouveauTotal,
+          statutCommande: commandeExistante.statutCommande, // Permet aussi à l'admin de changer le statut
+        },
+      });
+    });
   }
 
   async remove(id: number) {
