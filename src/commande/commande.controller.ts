@@ -17,8 +17,13 @@ export class CommandeController {
   constructor(private readonly commandeService: CommandeService) {}
 
   @Post()
-  create(@Body() createCommandeDto: CreateCommandeDto) {
-    return this.commandeService.create(createCommandeDto);
+  async create(@Body() createCommandeDto: CreateCommandeDto) {
+    return await this.commandeService.create(createCommandeDto);
+  }
+
+  @Get('/user/:id')
+  async findUserCommandes(@Param('id', ParseIntPipe) id: number) {
+    return await this.commandeService.findAllUserCommand(id);
   }
 
   @Get()

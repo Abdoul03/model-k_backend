@@ -114,6 +114,23 @@ export class CommandeService {
     });
   }
 
+  async findAllUserCommand(userId: number) {
+    const utilisateur = await this.userService.findOne(userId);
+
+    if (!utilisateur) {
+      throw new NotFoundException('Utilisateur introvable');
+    }
+
+    const commandes = await this.databaseService.commande.findMany({
+      where: {
+        utilisateurId: utilisateur.id,
+      },
+      include: { tenues: { include: { options: true } } },
+    });
+
+    return commandes;
+  }
+
   async findAll() {
     return await this.databaseService.commande.findMany();
   }
