@@ -20,7 +20,11 @@ export class MediaService {
       fs.mkdirSync(desktopPath, { recursive: true });
     }
 
-    const fileName = `${Date.now()}-${file.originalname}`;
+    const sanitizedName = file.originalname
+      .replace(/\s+/g, '_') // remplace les espaces par _
+      .replace(/[^a-zA-Z0-9._-]/g, '');
+
+    const fileName = `${Date.now()}-${sanitizedName}`;
     const filePath = path.join(desktopPath, fileName);
 
     try {
