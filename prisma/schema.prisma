@@ -38,6 +38,7 @@ enum TypeTissus {
 
 enum StatutCommande {
   EnAttente
+  Payer
   EnProduction
   Pret
   Livre
