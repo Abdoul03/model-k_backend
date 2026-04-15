@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMesureDto } from './dto/create-mesure.dto';
 import { UpdateMesureDto } from './dto/update-mesure.dto';
 import { UsersService } from '../users/users.service';
@@ -76,12 +80,29 @@ export class MesureService {
   }
 
   async remove(id: number, userId: number) {
-    const user = await this.usersService.findOne(userId);
-    if (!user) {
-      throw new NotFoundException('Utilisateur introuvable');
-    }
-    return await this.databaseService.mesure.delete({
-      where: { id },
+    const mesure = await this.databaseService.mesure.findFirst({
+      where: {
+        id: id,
+        utilisateurId: userId,
+      },
     });
+
+    if (!mesure) {
+      throw new NotFoundException(
+        `Mesure avec l'ID ${id} introuvable pour cet utilisateur`,
+      );
+    }
+
+    try {
+      // 2. Suppression effective
+      return await this.databaseService.mesure.delete({
+        where: { id },
+      });
+    } catch {
+      // Si la mesure est utilisée dans une commande (clé étrangère)
+      throw new BadRequestException(
+        'Impossible de supprimer cette mesure car elle est utilisée dans une commande existante.',
+      );
+    }
   }
 }

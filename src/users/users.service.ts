@@ -73,18 +73,20 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<Utilisateur> {
-    let hashedPassword: string | undefined;
+    const data: UpdateUserDto = { ...updateUserDto };
     if (updateUserDto.motDePasse) {
-      hashedPassword = await bcrypt.hash(updateUserDto.motDePasse, saltRounds);
+      data.motDePasse = await bcrypt.hash(updateUserDto.motDePasse, saltRounds);
+    } else {
+      delete data.motDePasse; // On ne met pas à jour le MDP s'il est vide
     }
-    return await this.databaseService.utilisateur.update({
-      where: { id },
-      data: {
-        ...updateUserDto,
-        motDePasse: hashedPassword ?? undefined,
-        role: updateUserDto.role ? updateUserDto.role : undefined,
-      },
-    });
+    try {
+      return await this.databaseService.utilisateur.update({
+        where: { id },
+        data: data,
+      });
+    } catch {
+      throw new BadRequestException('Impossible de mettre à jour le profil.');
+    }
   }
 
   async remove(id: number): Promise<Utilisateur> {
