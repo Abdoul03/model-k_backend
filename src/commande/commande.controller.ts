@@ -11,6 +11,7 @@ import {
 import { CommandeService } from './commande.service';
 import { CreateCommandeDto } from './dto/create-commande.dto';
 import { UpdateCommandeDto } from './dto/update-commande.dto';
+import { StatutCommande } from '@prisma/client';
 
 @Controller('commande')
 export class CommandeController {
@@ -42,6 +43,14 @@ export class CommandeController {
     @Body() updateCommandeDto: UpdateCommandeDto,
   ) {
     return this.commandeService.update(id, updateCommandeDto);
+  }
+
+  @Patch(':id/statut')
+  updateStatut(
+    @Param('id') id: number,
+    @Body('statutCommande') statut: StatutCommande, // On attend { "statut": "EnProduction" }
+  ) {
+    return this.commandeService.updateStatut(id, statut);
   }
 
   @Delete(':id')

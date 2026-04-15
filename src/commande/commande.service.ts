@@ -8,6 +8,7 @@ import { UpdateCommandeDto } from './dto/update-commande.dto';
 import { DatabaseService } from '../database/database.service';
 import { UsersService } from '../users/users.service';
 import { MesureService } from '../mesure/mesure.service';
+import { StatutCommande } from '@prisma/client';
 
 @Injectable()
 export class CommandeService {
@@ -132,11 +133,16 @@ export class CommandeService {
   }
 
   async findAll() {
-    return await this.databaseService.commande.findMany();
+    return await this.databaseService.commande.findMany({
+      include: { tenues: { include: { options: true } } },
+    });
   }
 
   async findOne(id: number) {
-    return await this.databaseService.commande.findUnique({ where: { id } });
+    return await this.databaseService.commande.findUnique({
+      where: { id },
+      include: { tenues: { include: { options: true } } },
+    });
   }
 
   async update(id: number, updateCommandeDto: UpdateCommandeDto) {
@@ -218,6 +224,37 @@ export class CommandeService {
         },
       });
     });
+  }
+
+  async updateStatut(id: number, nouveauStatut: StatutCommande) {
+    // 1. Vérifier si la commande existe
+    const commande = await this.databaseService.commande.findUnique({
+      where: { id },
+    });
+
+    if (!commande) {
+      throw new NotFoundException(`La commande #${id} n'existe pas.`);
+    }
+
+    // 2. Logique métier : Sécurité sur le statut "Payer"
+    // Si la commande est déjà "Livre", on ne revient pas en arrière (optionnel selon ton besoin)
+    if (commande.statutCommande === 'Livre' && nouveauStatut !== 'Livre') {
+      throw new BadRequestException(
+        'Une commande livrée ne peut plus changer de statut.',
+      );
+    }
+
+    // 3. Mise à jour du statut
+    try {
+      return await this.databaseService.commande.update({
+        where: { id },
+        data: { statutCommande: nouveauStatut },
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        `Erreur lors du changement de statut.${error}`,
+      );
+    }
   }
 
   async remove(id: number) {
