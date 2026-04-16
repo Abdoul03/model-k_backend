@@ -32,6 +32,9 @@ export class DesignService {
           categorieId: Number(categorie.id),
           tissusId: Number(createDesignDto.tissusId),
         },
+        include: {
+          options: true,
+        },
       });
 
       const createdMedias: Media[] = [];
@@ -58,6 +61,7 @@ export class DesignService {
       include: {
         medias: true,
         categorie: true,
+        options: true,
       },
     });
     return models;
@@ -69,6 +73,7 @@ export class DesignService {
       include: {
         medias: true,
         categorie: true,
+        options: true,
       },
     });
 
