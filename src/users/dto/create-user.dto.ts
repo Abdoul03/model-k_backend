@@ -52,6 +52,12 @@ export class CreateUserDto {
   })
   role?: 'CLIENT' | 'ADMIN';
 
+  @ApiProperty()
+  @IsString({ message: 'La taille doit être une chaîne de caractères.' })
+  @IsOptional()
+  taille?: number;
+
+  @ApiProperty()
   @IsOptional()
   refreshToken?: string;
 }

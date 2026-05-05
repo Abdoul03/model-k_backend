@@ -71,6 +71,7 @@ model Utilisateur {
   role         Role    @default(CLIENT)
   adresse      String?
   refreshToken String? @db.Text
+  taille       Float?
 
   // Relations
   mesures   Mesure[]
@@ -139,7 +140,6 @@ model Mesure {
   id            Int        @id @default(autoincrement())
   label         String
   poitrine      Float
-  taille        Float
   poids         Float
   epaule        Float
   longueurBras  Float

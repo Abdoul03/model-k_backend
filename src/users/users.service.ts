@@ -29,6 +29,7 @@ export class UsersService {
           telephone: createUserDto.telephone,
           motDePasse: passwordHash,
           adresse: createUserDto.adresse,
+          taille: createUserDto.taille,
           role: createUserDto.role as Role,
         },
       });
@@ -44,20 +45,19 @@ export class UsersService {
   }
 
   async findAll(role?: Role): Promise<Utilisateur[]> {
-    if (!role) {
-      const user = await this.databaseService.utilisateur.findMany({
-        where: {
-          role,
-        },
-      });
-      if (!user) {
-        throw new NotFoundException(
-          `Aucun utilisateur avec le role ${role} trouvé`,
-        );
-      }
-      return user;
+    const users = await this.databaseService.utilisateur.findMany({
+      where: {
+        role: role, // Si role est undefined, Prisma ne filtrera pas sur ce champ
+      },
+    });
+
+    if (role && users.length === 0) {
+      throw new NotFoundException(
+        `Aucun utilisateur avec le rôle "${role}" n'a été trouvé`,
+      );
     }
-    return await this.databaseService.utilisateur.findMany();
+
+    return users;
   }
 
   async findOne(id: number): Promise<Utilisateur> {

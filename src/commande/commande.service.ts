@@ -88,7 +88,6 @@ export class CommandeService {
             mesuresSnapshot: {
               label: mesuresUtilisateur.label,
               poitrine: mesuresUtilisateur.poitrine,
-              taille: mesuresUtilisateur.taille,
               poids: mesuresUtilisateur.poids,
               epaule: mesuresUtilisateur.epaule,
               longueurBras: mesuresUtilisateur.longueurBras,
