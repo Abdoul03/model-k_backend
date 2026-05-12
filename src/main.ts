@@ -44,7 +44,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   app.enableCors({
-    origin: ['http://localhost:8080', 'http://192.168.1.32:8080'],
+    origin: [
+      'http://localhost:8080',
+      'http://192.168.1.32:8080',
+      'https://modolk-frontend.vercel.app',
+    ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
